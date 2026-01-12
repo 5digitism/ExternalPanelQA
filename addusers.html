@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Manage Users - EAP System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrapper">
+  <div class="sidebar">
+    <h3>EAP System</h3>
+    <a href="dashboard.php">🏠 Dashboard</a>
+    <a href="panels.php">👥 Panels</a>
+    <a href="cqi.php">📊 CQI Tracking</a>
+    <a href="upload_report.php">📄 Upload Report</a>
+    <?php if (is_admin()): ?>
+      <hr><a href="users.php" class="fw-bold text-warning">👤 Manage Users</a>
+    <?php endif; ?>
+    <hr><a href="logout.php" class="text-warning">🚪 Logout</a>
+  </div>
+
+  <div class="content">
+    <h3 class="mb-4">Manage Users (Admin Only)</h3>
+
+    <!-- Show confirmation if new user created -->
+    <?php if (isset($_GET['created'])): ?>
+      <div class="alert alert-success w-75">
+        ✅ <strong>New user created:</strong> <?= htmlspecialchars($_GET['created']) ?><br>
+        Temporary Password: <code><?= htmlspecialchars($_GET['pw']) ?></code>
+      </div>
+    <?php endif; ?>
+
+    <!-- Add User Form -->
+    <form method="post" class="border p-3 rounded mb-4 w-75">
+      <h5>Add New User</h5>
+      <div class="row">
+        <div class="col-md-4 mb-2">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="col-md-4 mb-2">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="col-md-4 mb-2">
+          <label class="form-label">Role</label>
+          <select name="role" class="form-select">
+            <option value="admin">Admin</option>
+            <option value="qa">QA</option>
+            <option value="coordinator">Coordinator</option>
+            <option value="head">Head</option>
+            <option value="panel">Panel Member</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Create User</button>
+    </form>
+
+    <!-- Users Table -->
+    <h5>Existing Users</h5>
+    <table class="table table-striped table-bordered w-75">
+      <thead class="table-primary">
+        <tr>
+          <th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php while ($u = $users->fetch_assoc()): ?>
+        <tr>
+          <td><?= htmlspecialchars($u['name']) ?></td>
+          <td><?= htmlspecialchars($u['email']) ?></td>
+          <td><?= htmlspecialchars($u['role']) ?></td>
+          <td><?= htmlspecialchars($u['created_at']) ?></td>
+          <td>
+            <?php if ($u['id'] !== $_SESSION['user']['id']): ?>
+              <a href="users.php?delete=<?= $u['id'] ?>" class="btn btn-sm btn-danger"
+                 onclick="return confirm('Delete this user?')">Delete</a>
+            <?php else: ?>
+              <span class="text-muted">You</span>
+            <?php endif; ?>
+          </td>
+        </tr>
+      <?php endwhile; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

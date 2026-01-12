@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Panel - EAP System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Print Specific Styles */
+        @media print {
+            .sidebar, .navbar-custom, .breadcrumb, .btn, .collapse-btn, .card-header p, .text-muted, #formActions, #previewActions, .file-upload-wrapper {
+                display: none !important;
+            }
+            .content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .wrapper {
+                display: block !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #eee !important;
+            }
+            .form-control, .form-select {
+                border: none !important;
+                background-color: transparent !important;
+                padding: 0 !important;
+                font-weight: bold;
+                appearance: none;
+            }
+            body {
+                background: white !important;
+            }
+            .print-header {
+                display: block !important;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #333;
+                padding-bottom: 10px;
+            }
+            #resumePreviewDisplay {
+                display: block !important;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+        }
+        .print-header { display: none; }
+        
+        /* Preview Styling */
+        .preview-mode .form-control:disabled, 
+        .preview-mode .form-select:disabled,
+        .preview-mode textarea:disabled {
+            background-color: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+            color: #212529;
+            opacity: 1;
+            cursor: default;
+        }
+
+        .status-badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #fdfdfd;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: #0d6efd;
+            background: #f0f7ff;
+        }
+
+        #resumePreviewDisplay {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+
+        /* Modal Preview Text Styling */
+        .preview-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #6c757d;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .preview-value {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Start collapsed by default -->
+<div class="wrapper collapsed" id="wrapper">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>EAP System</h3>
+      <button class="collapse-btn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+    </div>
+
+    <a href="dashboard.php">
+      <i class="fas fa-chart-line me-2"></i> <span>Dashboard</span>
+    </a>
+
+    <a href="panels.html" class="active">
+      <i class="fas fa-users"></i> <span>Panels</span>
+    </a>
+
+    <a href="cqi.html">
+      <i class="fas fa-tasks me-2"></i> <span>CQI Tracking</span>
+    </a>
+
+    <a href="uploadreport.html">
+      <i class="fas fa-upload me-2"></i> <span>Upload Report</span>
+    </a>
+
+    <hr>
+
+    <a href="logout.php" class="text-warning">
+      <i class="fas fa-sign-out-alt me-2"></i> <span>Logout</span>
+    </a>
+  </div>
+
+    <!-- Page Content -->
+    <div class="content">
+        <!-- Hidden Header for PDF/Print -->
+        <div class="print-header">
+            <h2 class="text-center">EAP SYSTEM - PANEL REGISTRATION FORM</h2>
+            <p class="text-center">Submission Status: <strong>PENDING DEAN APPROVAL</strong></p>
+            <p class="text-center text-muted">Generated on: <span class="current-date-print"></span></p>
+        </div>
+
+        <!-- Top Navbar -->
+        <div class="navbar-custom d-flex justify-content-between align-items-center">
+            <h4 class="mb-0" id="pageTitle">Add New Panel</h4>
+            <div class="d-flex align-items-center">
+                <span class="text-muted me-3">December 25, 2025</span>
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i> Jane Doe
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            <!-- Breadcrumbs -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold" id="mainHeading">Register New Panel</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="dashboard.html">Home</a></li>
+                        <li class="breadcrumb-item"><a href="panels.html">Panels</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumbActive">Add New</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Form Card -->
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-10">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" id="formContainer">
+                        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0 fw-semibold text-primary" id="cardTitle">Panel Information</h5>
+                                <p class="text-muted small mb-0" id="cardSubtitle">Fill in the details below to initiate the approval process.</p>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm d-none" id="printBtn" onclick="window.print()">
+                                <i class="fas fa-file-pdf me-1"></i> Print Submission PDF
+                            </button>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Status Indicator (Hidden until Final Submission) -->
+                            <div id="statusIndicator" class="mb-4 d-none">
+                                <div class="status-badge-pending">
+                                    <i class="fas fa-clock me-2"></i> <strong>Current Status:</strong> Waiting for Dean's Approval
+                                </div>
+                            </div>
+
+                            <form action="#" method="POST" id="addPanelForm" enctype="multipart/form-data">
+                                <div class="row g-4">
+                                    <div class="col-md-12">
+                                        <label for="panelName" class="form-label fw-medium">Panel Name</label>
+                                        <input type="text" class="form-control bg-light border-0 py-2 px-3" id="panelName" name="panel_name" placeholder="e.g. Safety Compliance Review Q4" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="leadPerson" class="form-label fw-medium">Lead Person</label>
+                                        <select class="form-select bg-light border-0 py-2 px-3" id="leadPerson" name="lead_person" required>
+                                            <option value="" selected disabled>Select a Lead...</option>
+                                            <option value="Alice Johnson">Alice Johnson</option>
+                                            <option value="Bob Smith">Bob Smith</option>
+                                            <option value="Dr. James Lim">Dr. James Lim</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="panelID" class="form-label fw-medium">Panel ID</label>
+                                        <input type="text" class="form-control bg-light border-0 py-2 px-3" id="panelID" value="P-AutoGenerated" disabled>
+                                    </div>
+
+                                    <!-- Resume Upload Field -->
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-medium">Lead Person Resume (PDF)</label>
+                                        <div class="file-upload-wrapper" id="fileWrapper">
+                                            <input type="file" class="form-control d-none" id="resumeUpload" name="resume" accept=".pdf">
+                                            <div id="uploadPlaceholder">
+                                                <i class="fas fa-file-upload fa-2x text-primary mb-2"></i>
+                                                <p class="mb-1 text-secondary">Click to upload or drag and drop PDF</p>
+                                                <small class="text-muted">Maximum file size: 5MB</small>
+                                            </div>
+                                            <div id="resumePreviewDisplay" class="d-none mt-2">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                <span id="fileNameDisplay">filename.pdf</span>
+                                                <button type="button" class="btn btn-link btn-sm text-danger ms-2" id="removeFile"><i class="fas fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="startDate" class="form-label fw-medium">Start Date</label>
+                                        <input type="date" class="form-control bg-light border-0 py-2 px-3" id="startDate" name="start_date" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="status" class="form-label fw-medium">Process Status</label>
+                                        <input type="text" class="form-control bg-light border-0 py-2 px-3" id="processStatus" value="Draft" disabled>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label for="description" class="form-label fw-medium">Description</label>
+                                        <textarea class="form-control bg-light border-0 py-2 px-3" id="description" name="description" rows="4" placeholder="Briefly describe the purpose of this panel..."></textarea>
+                                    </div>
+
+                                    <!-- Step 1 Actions -->
+                                    <div class="col-md-12 mt-5 border-top pt-4 text-end" id="formActions">
+                                        <a href="panels.html" class="btn btn-light px-4 py-2 me-2">Cancel</a>
+                                        <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold shadow-sm" id="submitBtn">
+                                            Preview & Submit <i class="fas fa-eye ms-2"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Step 2 Actions (After Confirmation) -->
+                                    <div class="col-md-12 mt-5 border-top pt-4 text-end d-none" id="postSubmitActions">
+                                        <button type="button" class="btn btn-success px-5 py-2 fw-semibold shadow-sm" id="confirmDoneBtn">
+                                            Finish & Go to Panels List <i class="fas fa-check-circle ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom py-3">
+                <h5 class="modal-title fw-bold" id="previewModalLabel">Confirm Submission Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted mb-4 small">Please ensure all details below are accurate before final submission to the Dean.</p>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="preview-label">Panel Name</div>
+                        <div class="preview-value" id="viewPanelName">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="preview-label">Lead Person</div>
+                        <div class="preview-value" id="viewLeadPerson">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="preview-label">Start Date</div>
+                        <div class="preview-value" id="viewStartDate">-</div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="preview-label">Attached Resume</div>
+                        <div class="preview-value" id="viewResumeName">No file uploaded</div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="preview-label">Description</div>
+                        <div class="preview-value" id="viewDescription">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0 py-3">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Go Back & Edit</button>
+                <button type="button" class="btn btn-primary px-4 fw-semibold" id="finalSubmitBtn">Confirm & Submit Approval</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4 text-center p-4">
+            <div class="modal-body">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="fw-bold mb-2">Submission Successful!</h3>
+                <p class="text-muted">Your panel registration has been submitted and is now <strong>waiting for Dean approval</strong>.</p>
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary w-100 py-2 fw-semibold" data-bs-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function toggleSidebar() {
+        const wrapper = document.getElementById('wrapper');
+        if (wrapper) wrapper.classList.toggle('collapsed');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const addPanelForm = document.getElementById('addPanelForm');
+        const startDateInput = document.getElementById('startDate');
+        const formActions = document.getElementById('formActions');
+        const postSubmitActions = document.getElementById('postSubmitActions');
+        const printBtn = document.getElementById('printBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const processStatus = document.getElementById('processStatus');
+        const inputs = addPanelForm.querySelectorAll('input, select, textarea');
+        
+        // File Upload Elements
+        const fileWrapper = document.getElementById('fileWrapper');
+        const resumeUpload = document.getElementById('resumeUpload');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const resumePreviewDisplay = document.getElementById('resumePreviewDisplay');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const removeFile = document.getElementById('removeFile');
+
+        // Modals
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+
+        // Set current date in print header
+        const today = new Date().toLocaleDateString();
+        const dateDisplays = document.querySelectorAll('.current-date-print');
+        if(dateDisplays.length > 0) dateDisplays[0].textContent = today;
+
+        if (startDateInput) {
+            startDateInput.value = new Date().toISOString().split('T')[0];
+        }
+
+        // File Upload Logic
+        fileWrapper.addEventListener('click', () => {
+            if (!resumeUpload.disabled) resumeUpload.click();
+        });
+
+        resumeUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                fileNameDisplay.textContent = fileName;
+                uploadPlaceholder.classList.add('d-none');
+                resumePreviewDisplay.classList.remove('d-none');
+            }
+        });
+
+        removeFile.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resumeUpload.value = '';
+            uploadPlaceholder.classList.remove('d-none');
+            resumePreviewDisplay.classList.add('d-none');
+        });
+
+        // Form Submit -> Show Preview Modal
+        addPanelForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Populate Preview Modal
+            document.getElementById('viewPanelName').textContent = document.getElementById('panelName').value || 'N/A';
+            document.getElementById('viewLeadPerson').textContent = document.getElementById('leadPerson').value || 'N/A';
+            document.getElementById('viewStartDate').textContent = document.getElementById('startDate').value || 'N/A';
+            document.getElementById('viewDescription').textContent = document.getElementById('description').value || 'No description provided';
+            
+            const file = resumeUpload.files[0];
+            document.getElementById('viewResumeName').innerHTML = file 
+                ? `<i class="fas fa-file-pdf text-danger me-1"></i> ${file.name}` 
+                : '<span class="text-muted">No file uploaded</span>';
+
+            previewModal.show();
+        });
+
+        // Final Submit Logic
+        document.getElementById('finalSubmitBtn').addEventListener('click', function() {
+            previewModal.hide();
+            
+            // Transition main form to "Submitted" state
+            document.body.classList.add('preview-mode');
+            inputs.forEach(input => {
+                if (input.id !== 'panelID') input.disabled = true;
+            });
+            
+            removeFile.classList.add('d-none');
+            formActions.classList.add('d-none');
+            postSubmitActions.classList.remove('d-none');
+            printBtn.classList.remove('d-none');
+            statusIndicator.classList.remove('d-none');
+            
+            processStatus.value = "Pending Approval";
+            document.getElementById('cardTitle').textContent = "Registration Completed";
+            document.getElementById('cardSubtitle').textContent = "This panel is locked and pending Dean approval.";
+            document.getElementById('mainHeading').textContent = "Submission Sent";
+
+            // Show Success Modal
+            setTimeout(() => {
+                successModal.show();
+            }, 500);
+        });
+
+        // Final Redirect
+        document.getElementById('confirmDoneBtn').addEventListener('click', function() {
+            window.location.href = 'panels.html';
+        });
+    });
+</script>
+
+</body>
+</html>
