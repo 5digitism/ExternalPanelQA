@@ -59,7 +59,9 @@ if (!$result) {
       <button class="collapse-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
     <a href="dashboard.php"><i class="fas fa-chart-line me-2"></i> <span>Dashboard</span></a>
+    <a href="PCEvaluation.php"><i class="fas fa-list-check"></i> <span>Evaluation</span></a>
     <a href="panels.php" class="active"><i class="fas fa-users me-2"></i> <span>Panels</span></a>
+    <a href="newpanel.php"><i class="fas fa-user-plus me-2"></i> <span>Register New</span></a>
     <hr>
     <a href="logout.php" class="text-warning"><i class="fas fa-sign-out-alt me-2"></i> <span>Logout</span></a>
   </div>
