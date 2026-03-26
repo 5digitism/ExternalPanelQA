@@ -116,10 +116,6 @@ if (!$panel) {
                     <a href="panel_dashboard.php" class="sidebar-link active">
                         <i class="fas fa-th-large"></i> Overview
                     </a>
-                    <a href="panel_evaluation.php" class="sidebar-link">
-                        <i class="fas fa-clipboard-check"></i> Evaluation
-                    </a>
-                    </a>
                     <a href="panelchangepassword.php" class="sidebar-link">
                         <i class="fas fa-key"></i> Change Password
                     </a>
