@@ -1,0 +1,390 @@
+body {
+  background-color: #f4f6f8;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* --------------------
+   Sidebar Styles
+   -------------------- */
+.sidebar {
+  width: 250px;
+  background: #343a40;
+  color: #fff;
+  padding: 20px;
+  flex-shrink: 0;
+  transition: width 0.3s ease, padding 0.3s ease;
+  overflow-x: hidden;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sidebar h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  white-space: nowrap;
+  transition: opacity 0.3s;
+}
+
+.sidebar hr {
+    border-color: rgba(255, 255, 255, 0.3);
+    margin: 15px 0;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 15px;
+  transition: background 0.3s, padding 0.3s;
+  border-radius: 6px;
+  white-space: nowrap;
+  margin-bottom: 5px;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.sidebar .active {
+  background: rgba(255,255,255,0.3);
+  font-weight: 600;
+}
+
+.sidebar a i {
+    font-size: 1.1rem;
+    width: 25px;
+    transition: margin-right 0.3s;
+}
+
+.sidebar a span {
+    transition: opacity 0.3s;
+}
+
+/* Collapse Button */
+.collapse-btn {
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-size: 1rem;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 10;
+    margin-left: 10px;
+}
+
+/* --------------------
+   Collapsed State Styles
+   -------------------- */
+.wrapper.collapsed .sidebar {
+  width: 70px;
+  padding: 20px 0;
+}
+
+.wrapper.collapsed .sidebar-header {
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.wrapper.collapsed .sidebar h3 {
+  display: none;
+}
+
+.wrapper.collapsed .sidebar hr {
+    display: none;
+}
+
+.wrapper.collapsed .sidebar a {
+    justify-content: center;
+    padding: 10px 0;
+    margin: 5px auto;
+    width: 90%;
+}
+
+.wrapper.collapsed .sidebar a i {
+    margin-right: 0 !important;
+}
+
+.wrapper.collapsed .sidebar a span {
+    display: none;
+}
+
+.wrapper.collapsed .collapse-btn {
+    transform: rotate(180deg);
+    margin-left: 0;
+}
+
+/* --------------------
+   Content Area Styles
+   -------------------- */
+.content {
+  flex: 1;
+  background: #fff;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.navbar-custom {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 15px 30px;
+  margin: -30px -30px 30px -30px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* --------------------
+   Stats Cards Layout
+   -------------------- */
+
+/* NEW: Ensure stat cards are always side-by-side and equal size */
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+/* Equal-width stat cards including the <a> wrapper */
+.stats-row > * {
+    flex: 1 !important;
+    display: flex;
+}
+
+/* Make sure clickable card (inside <a>) fills full width */
+.stat-link {
+    width: 100%;
+    display: flex;
+}
+
+
+/* NEW: Make ALL stat cards same exact size */
+.stats-row .card-stat {
+    flex: 1;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* To wrap clickable stat card */
+.stat-link {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.card-stat {
+  border: none;
+  background: #ffffff;
+  text-align: center;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* NEW: Stat card icons */
+.stat-icon {
+    font-size: 2.3rem;
+    color: #0d6efd;
+    margin-bottom: 12px;
+}
+
+.card-stat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.card-stat h5 {
+    color: #6c757d;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.card-stat h3 {
+  font-size: 2.5rem;
+  color: #0d6efd;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Clickable stat card */
+.clickable-card {
+    cursor: pointer;
+}
+
+/* Dashboard List Styles */
+.list-group-item {
+    border-color: #f0f0f0;
+}
+
+/* --------------------
+   Responsive Adjustments
+   -------------------- */
+@media (max-width: 992px) {
+    .stats-row {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        height: auto;
+        padding: 10px 20px;
+        position: relative;
+    }
+
+    .sidebar h3 {
+        display: block !important;
+    }
+
+    .sidebar-header {
+        justify-content: space-between !important;
+    }
+
+    .sidebar a {
+        padding: 8px 15px;
+        justify-content: flex-start !important;
+        margin: 2px 0;
+    }
+
+    .sidebar a i {
+        margin-right: 10px !important;
+    }
+
+    .sidebar a span {
+        display: inline !important;
+    }
+
+    .collapse-btn {
+        position: static;
+        transform: none !important;
+        margin-left: auto;
+        border: none;
+    }
+
+    .wrapper.collapsed .sidebar a,
+    .wrapper.collapsed .sidebar hr {
+        display: none;
+    }
+
+    .wrapper.collapsed .sidebar {
+        height: 60px;
+        overflow: hidden;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .navbar-custom {
+        margin: -20px -20px 20px -20px;
+        padding: 10px 20px;
+    }
+}
+
+/* --------------------
+   Panels Table Styling
+   -------------------- */
+
+.panel-table-container {
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.custom-table thead tr {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.custom-table thead th {
+    padding: 14px;
+    font-weight: 600;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    text-align: center; /* This centers the header text */
+}
+
+.custom-table tbody tr {
+    background: #ffffff;
+    transition: background 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #eef5ff;
+}
+
+.custom-table td {
+    padding: 14px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.95rem;
+}
+
+.custom-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-table .btn {
+    border-radius: 6px;
+}
+
+/*Buttons*/
+
+/* Logout Button in Header */
+.header-logout-btn {
+    background-color: #dc3545;      /* red */
+    color: #fff !important;         /* white text */
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid #dc3545;      /* border matches button color */
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.header-logout-btn:hover {
+    background-color: #ffffff;      /* white */
+    color: #dc3545 !important;      /* red text */
+    transform: translateY(-2px);
+}
+
+.header-logout-btn i {
+    font-size: 1rem;
+    margin-right: 6px;
+}
+
