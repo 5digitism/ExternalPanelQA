@@ -1,8 +1,9 @@
 <?php
+session_start();
 require_once 'db.php';
 
-// Fetch all panels
-$query = "SELECT * FROM panel_members ORDER BY id DESC";
+// Fetch all panels — include last_visit_date so table can show visit status
+$query = "SELECT *, last_visit_date FROM panel_members ORDER BY id DESC";
 $result = $conn->query($query);
 
 // Fetch filter options for the sorting section
@@ -111,6 +112,7 @@ if (!$result) {
                         <th class="ps-4">Panel Name</th>
                         <th class="text-center">Level</th>
                         <th>Programme</th>
+                        <th class="text-center">Latest Visit</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Action</th>
                     </tr>
@@ -126,6 +128,16 @@ if (!$result) {
                                 <span class="badge rounded-pill bg-light text-dark border px-3"><?= htmlspecialchars($row['level']) ?></span>
                             </td>
                             <td class="small"><?= htmlspecialchars($row['programme']) ?></td>
+                            <td class="text-center">
+                                <?php if (!empty($row['last_visit_date'])): ?>
+                                    <span class="badge rounded-pill bg-warning text-dark px-3" style="font-size:0.75rem;">
+                                        <i class="fas fa-shoe-prints me-1"></i>
+                                        <?= date('d M Y', strtotime($row['last_visit_date'])) ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge rounded-pill bg-light text-muted border px-3" style="font-size:0.75rem;">No visit</span>
+                                <?php endif; ?>
+                            </td>
                             <td class="text-center">
                                 <?php 
                                     $s = $row['status'];
@@ -178,8 +190,22 @@ if (!$result) {
                             <div class="info-label">Specific Programme</div>
                             <div id="mProg" class="info-value"></div>
                         </div>
-                        
-                        <hr class="my-4">
+
+                        <hr class="my-3">
+
+                        <!-- ── QA STATUS: Latest Visit Date (fetched live from PC records) ── -->
+                        <div class="info-group" id="visitDateSection">
+                            <div class="info-label">
+                                <i class="fas fa-shoe-prints me-1" style="color:#b7770d;"></i>
+                                Latest Visit Date <small class="text-muted fw-normal">(recorded by PC)</small>
+                            </div>
+                            <div id="mVisitDate" class="info-value">
+                                <span class="text-muted fst-italic small">Loading…</span>
+                            </div>
+                            <div id="mVisitHistory" class="mt-2" style="display:none;"></div>
+                        </div>
+
+                        <hr class="my-3">
                         
                         <div class="alert alert-info border-0 small">
                             <i class="fas fa-info-circle me-1"></i> You are viewing this profile as a Head of Quality Assurance.
@@ -242,7 +268,92 @@ if (!$result) {
         if (data.resume_path) { 
             iframe.src = data.resume_path + "#view=FitH"; 
         }
+
+        // Reset visit section to loading state before fetching
+        document.getElementById('mVisitDate').innerHTML = '<span class="text-muted fst-italic small"><i class="fas fa-spinner fa-spin me-1"></i>Loading…</span>';
+        document.getElementById('mVisitHistory').style.display = 'none';
+        document.getElementById('mVisitHistory').innerHTML = '';
+
         bModal.show();
+
+        // ── Fetch latest visit date live from get_visit_date.php ──────────────
+        fetchLatestVisitDate(data.id);
+    }
+
+    function fetchLatestVisitDate(panelId) {
+        fetch('get_visit_date.php?panel_id=' + encodeURIComponent(panelId))
+            .then(res => res.json())
+            .then(resp => {
+                const visitDateEl   = document.getElementById('mVisitDate');
+                const visitHistEl   = document.getElementById('mVisitHistory');
+
+                if (!resp.success) {
+                    visitDateEl.innerHTML = '<span class="text-danger small">Could not load visit data.</span>';
+                    return;
+                }
+
+                if (resp.last_visit_date) {
+                    // Format date nicely
+                    const d = new Date(resp.last_visit_date + 'T00:00:00');
+                    const formatted = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                    // Days since visit
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    const diff = Math.floor((today - d) / 86400000);
+                    const daysLabel = diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : diff + ' days ago';
+
+                    visitDateEl.innerHTML = `
+                        <span style="font-size:1.05rem;font-weight:700;color:#0b3a6e;">${formatted}</span>
+                        <span class="badge rounded-pill ms-2"
+                              style="background:#fef9e7;color:#b7770d;border:1px solid #f9e08e;font-size:0.72rem;">
+                            ${daysLabel}
+                        </span>
+                        <div class="text-muted small mt-1">${resp.total_visits} visit record${resp.total_visits !== 1 ? 's' : ''} total</div>`;
+
+                    // Build history table if there are records
+                    if (resp.history && resp.history.length > 0) {
+                        let rows = resp.history.map((v, i) => {
+                            const vd = new Date(v.visit_date + 'T00:00:00');
+                            const vFormatted = vd.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                            const noteText = v.note ? `<span class="text-muted">${escHtml(v.note)}</span>` : '<span class="text-muted">—</span>';
+                            return `<tr>
+                                <td>${i + 1}</td>
+                                <td><strong>${vFormatted}</strong></td>
+                                <td style="max-width:120px;word-break:break-word;">${noteText}</td>
+                                <td class="text-muted">${escHtml(v.recorded_by)}</td>
+                            </tr>`;
+                        }).join('');
+
+                        visitHistEl.innerHTML = `
+                            <details>
+                                <summary style="cursor:pointer;font-size:0.78rem;color:#1a6fc4;margin-bottom:4px;">
+                                    <i class="fas fa-history me-1"></i>View all visit records
+                                </summary>
+                                <div style="max-height:160px;overflow-y:auto;margin-top:6px;">
+                                    <table class="table table-sm mb-0" style="font-size:0.75rem;">
+                                        <thead class="table-light">
+                                            <tr><th>#</th><th>Date</th><th>Note</th><th>By</th></tr>
+                                        </thead>
+                                        <tbody>${rows}</tbody>
+                                    </table>
+                                </div>
+                            </details>`;
+                        visitHistEl.style.display = 'block';
+                    }
+                } else {
+                    visitDateEl.innerHTML = '<span class="badge rounded-pill bg-light text-muted border px-3" style="font-size:0.8rem;"><i class="fas fa-calendar-times me-1"></i>No visit recorded by PC yet</span>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('mVisitDate').innerHTML = '<span class="text-danger small">Error fetching visit data.</span>';
+            });
+    }
+
+    function escHtml(str) {
+        const d = document.createElement('div');
+        d.appendChild(document.createTextNode(str));
+        return d.innerHTML;
     }
 
     // Clear PDF on close

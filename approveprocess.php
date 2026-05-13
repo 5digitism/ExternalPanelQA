@@ -52,7 +52,7 @@ function sendApprovalEmail($data) {
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'dopigangi@gmail.com'; // Your Gmail address
-        $mail->Password   = 'liur ehhz bowt dwsl'; // The code from the yellow box
+        $mail->Password   = 'uhle ptsx nbdg wfvi'; // The code from the yellow box
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 

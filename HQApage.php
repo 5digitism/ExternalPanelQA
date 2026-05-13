@@ -117,6 +117,83 @@ function timeAgo($timestamp) {
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
         }
+
+        /* ── Announcement Widget ── */
+        .ann-composer {
+            background: #fff;
+            border-radius: 16px;
+            border: 1.5px solid #e0e7ef;
+            box-shadow: 0 4px 16px rgba(13,110,253,0.07);
+            overflow: hidden;
+        }
+        .ann-composer-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+            color: white;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ann-composer-header h6 { margin: 0; font-weight: 700; font-size: 0.95rem; }
+        .ann-composer-body { padding: 20px 22px; }
+        .ann-composer-body input,
+        .ann-composer-body textarea,
+        .ann-composer-body select {
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            width: 100%;
+            padding: 9px 13px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s;
+        }
+        .ann-composer-body input:focus,
+        .ann-composer-body textarea:focus,
+        .ann-composer-body select:focus {
+            outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+        }
+        .ann-composer-body textarea { resize: vertical; min-height: 80px; }
+        .ann-post-btn {
+            background: #0d6efd; color: white; border: none;
+            border-radius: 10px; padding: 9px 22px;
+            font-family: 'Poppins', sans-serif; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .ann-post-btn:hover { background: #0043a8; }
+        .ann-post-btn:disabled { background: #adb5bd; cursor: not-allowed; }
+
+        .ann-feed { margin-top: 18px; }
+        .ann-item {
+            background: #f8faff;
+            border-left: 4px solid #0d6efd;
+            border-radius: 0 12px 12px 0;
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            position: relative;
+            transition: box-shadow 0.2s;
+        }
+        .ann-item.priority-important { border-left-color: #fd7e14; background: #fff8f0; }
+        .ann-item.priority-urgent    { border-left-color: #dc3545; background: #fff5f5; }
+        .ann-item-title  { font-weight: 700; font-size: 0.88rem; color: #0b3a6e; margin-bottom: 3px; }
+        .ann-item-body   { font-size: 0.82rem; color: #444; line-height: 1.55; white-space: pre-wrap; }
+        .ann-item-meta   { font-size: 0.72rem; color: #9ca3af; margin-top: 7px; }
+        .ann-delete-btn  {
+            position: absolute; top: 10px; right: 12px;
+            background: none; border: none; color: #ccc; font-size: 0.8rem; cursor: pointer;
+            padding: 2px 6px; border-radius: 6px; transition: color 0.2s, background 0.2s;
+        }
+        .ann-delete-btn:hover { color: #dc3545; background: #ffe4e4; }
+        .ann-priority-badge {
+            display: inline-block; font-size: 0.65rem; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge-normal    { background: #e8f4f8; color: #0d6efd; }
+        .badge-important { background: #fff3cd; color: #856404; }
+        .badge-urgent    { background: #f8d7da; color: #842029; }
+        .ann-empty { text-align: center; color: #adb5bd; font-size: 0.83rem; padding: 20px 0; }
+        #annPostStatus { font-size: 0.8rem; margin-top: 6px; min-height: 18px; }
     </style>
 </head>
 <body>
@@ -167,7 +244,7 @@ function timeAgo($timestamp) {
                 </div>
 
                 <h5 class="fw-bold mb-3">Quick Management</h5>
-                <div class="row g-3">
+                <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <a href="approvalpage.php" class="btn-action-card">
                             <div class="d-flex justify-content-between align-items-start">
@@ -186,6 +263,36 @@ function timeAgo($timestamp) {
                             <h6 class="fw-bold mb-1">Panel Directory</h6>
                             <p class="small text-muted mb-0">Search and manage existing members.</p>
                         </a>
+                    </div>
+                </div>
+
+                <!-- ── Announcement Composer ── -->
+                <div class="ann-composer">
+                    <div class="ann-composer-header">
+                        <i class="fas fa-bullhorn fa-lg"></i>
+                        <h6>Post Announcement to All PCs</h6>
+                    </div>
+                    <div class="ann-composer-body">
+                        <input type="text" id="annTitle" placeholder="Announcement title…" maxlength="200">
+                        <div class="d-flex gap-2 mb-0">
+                            <select id="annPriority" style="flex:0 0 160px;margin-bottom:10px;">
+                                <option value="normal">🔵 Normal</option>
+                                <option value="important">🟠 Important</option>
+                                <option value="urgent">🔴 Urgent</option>
+                            </select>
+                        </div>
+                        <textarea id="annBody" placeholder="Write your announcement here…"></textarea>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <button class="ann-post-btn" id="annPostBtn" onclick="postAnnouncement()">
+                                <i class="fas fa-paper-plane me-1"></i> Post Announcement
+                            </button>
+                            <div id="annPostStatus"></div>
+                        </div>
+
+                        <!-- Live feed of posted announcements -->
+                        <div class="ann-feed" id="annFeed">
+                            <div class="ann-empty"><i class="fas fa-spinner fa-spin me-1"></i> Loading…</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -232,7 +339,114 @@ function timeAgo($timestamp) {
     function toggleSidebar() {
         document.getElementById("wrapper").classList.toggle("collapsed");
     }
-</script>
 
+    // ── Announcement helpers ──────────────────────────────────────────────────
+    function escHtml(s) {
+        const d = document.createElement('div');
+        d.appendChild(document.createTextNode(s));
+        return d.innerHTML;
+    }
+
+    function timeAgoJs(dateStr) {
+        const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+        if (diff < 60)   return 'Just now';
+        if (diff < 3600) return Math.floor(diff/60)   + ' min ago';
+        if (diff < 86400)return Math.floor(diff/3600) + ' hr ago';
+        return Math.floor(diff/86400) + 'd ago';
+    }
+
+    function priorityBadge(p) {
+        const map = { normal: ['badge-normal','Normal'], important: ['badge-important','Important'], urgent: ['badge-urgent','Urgent'] };
+        const [cls, label] = map[p] || map.normal;
+        return `<span class="ann-priority-badge ${cls}">${label}</span>`;
+    }
+
+    function renderFeed(announcements) {
+        const feed = document.getElementById('annFeed');
+        if (!announcements.length) {
+            feed.innerHTML = '<div class="ann-empty"><i class="fas fa-megaphone me-1 opacity-50"></i>No announcements yet. Post one above.</div>';
+            return;
+        }
+        feed.innerHTML = announcements.map(a => `
+            <div class="ann-item priority-${escHtml(a.priority)}" id="annItem_${a.id}">
+                <button class="ann-delete-btn" onclick="deleteAnnouncement(${a.id})" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="ann-item-title">${escHtml(a.title)} ${priorityBadge(a.priority)}</div>
+                <div class="ann-item-body">${escHtml(a.body)}</div>
+                <div class="ann-item-meta">
+                    <i class="fas fa-user-shield me-1"></i>${escHtml(a.poster_name)}
+                    &nbsp;·&nbsp;
+                    <i class="fas fa-clock me-1"></i>${timeAgoJs(a.created_at)}
+                </div>
+            </div>`).join('');
+    }
+
+    function loadAnnouncements() {
+        fetch('announcements.php?action=fetch&limit=20')
+            .then(r => r.json())
+            .then(d => { if (d.success) renderFeed(d.announcements); })
+            .catch(() => {
+                document.getElementById('annFeed').innerHTML =
+                    '<div class="ann-empty text-danger">Could not load announcements.</div>';
+            });
+    }
+
+    function postAnnouncement() {
+        const title    = document.getElementById('annTitle').value.trim();
+        const body     = document.getElementById('annBody').value.trim();
+        const priority = document.getElementById('annPriority').value;
+        const status   = document.getElementById('annPostStatus');
+        const btn      = document.getElementById('annPostBtn');
+
+        if (!title || !body) {
+            status.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Title and body are required.</span>';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Posting…';
+        status.innerHTML = '';
+
+        const fd = new FormData();
+        fd.append('action',   'post');
+        fd.append('title',    title);
+        fd.append('body',     body);
+        fd.append('priority', priority);
+
+        fetch('announcements.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    document.getElementById('annTitle').value = '';
+                    document.getElementById('annBody').value  = '';
+                    document.getElementById('annPriority').value = 'normal';
+                    status.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Posted successfully!</span>';
+                    loadAnnouncements();
+                } else {
+                    status.innerHTML = `<span class="text-danger">${escHtml(d.message)}</span>`;
+                }
+            })
+            .catch(() => { status.innerHTML = '<span class="text-danger">Network error.</span>'; })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Post Announcement';
+                setTimeout(() => { status.innerHTML = ''; }, 4000);
+            });
+    }
+
+    function deleteAnnouncement(id) {
+        if (!confirm('Remove this announcement?')) return;
+        const fd = new FormData();
+        fd.append('action', 'delete');
+        fd.append('id', id);
+        fetch('announcements.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => { if (d.success) { const el = document.getElementById('annItem_' + id); if (el) el.remove(); } });
+    }
+
+    // Load on page ready
+    loadAnnouncements();
+</script>
 </body>
 </html>
