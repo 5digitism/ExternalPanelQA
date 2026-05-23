@@ -64,11 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // TRIGGER REMEMBER ME
                 handleRememberMe($conn, 'users', $user_data['username'], $remember, 'username');
 
-                if ($_SESSION['role'] === 'Head QA') {
-                    header("Location: HQApage.php");
-                } else {
-                    header("Location: dashboard.php");
-                }
+               if ($_SESSION['role'] === 'Head QA') {
+    header("Location: HQApage.php");
+} elseif ($_SESSION['role'] === 'PC') {
+    header("Location: pc_evaluation.php");
+} elseif ($_SESSION['role'] === 'HoS' || $_SESSION['role'] === 'DDAT') {
+    header("Location: HoSnDDAT.php");
+} else {
+    header("Location: dashboard.php");
+}
                 exit();
             }
         }

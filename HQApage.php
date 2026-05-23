@@ -129,6 +129,8 @@ function timeAgo($timestamp) {
             <button class="collapse-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
         </div>
         <a href="HQApage.php" class="active"><i class="fas fa-chart-line me-2"></i> <span>Dashboard</span></a>
+        <a href="qa_dashboard.php"><i class="fas fa-table me-2"></i> <span>Status Submission</span></a>
+        <a href="approvalpage.php" ><i class="fas fa-user-check me-2"></i> <span>Pending Approvals</span></a>
         <a href="HQApanel.php"><i class="fas fa-users me-2"></i> <span>Manage Panels</span></a>
         <hr>
         <a href="logout.php" class="text-warning"><i class="fas fa-sign-out-alt me-2"></i> <span>Logout</span></a>
@@ -187,6 +189,12 @@ function timeAgo($timestamp) {
                             <p class="small text-muted mb-0">Search and manage existing members.</p>
                         </a>
                     </div>
+                    <div class="col-md-6">
+    <a href="qa_dashboard.php" class="btn-action-card">
+        <h6 class="fw-bold mb-1">Status Submission</h6>
+        <p class="small text-muted mb-0">Track IAC · IRPC · UAC · URPC · Senate status.</p>
+    </a>
+</div>
                 </div>
             </div>
 
@@ -233,6 +241,13 @@ function timeAgo($timestamp) {
         document.getElementById("wrapper").classList.toggle("collapsed");
     }
 </script>
+<?php require_once 'check_overdue.php'; ?>
+    <?php require_once 'notifications_ui.php'; ?>
+    <!-- notifBannerStrip still needs to be somewhere in the page body -->
+    <div id="notifBannerStrip" class="notif-banner-strip" 
+         style="position:fixed; bottom:90px; left:20px; right:100px; z-index:9997; pointer-events:none;">
+    </div>
+
 
 </body>
 </html>

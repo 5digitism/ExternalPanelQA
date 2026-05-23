@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
-
+require_once 'panel_title_badge.php';
 // 1. Session and Security Check
 if (!isset($_SESSION['panel_id'])) {
     header("Location: login.html");
@@ -101,7 +101,10 @@ if (!$panel) {
 
 <div class="dashboard-banner">
     <div class="container text-center">
-        <h2 class="fw-bold mb-1">Welcome back, <?= htmlspecialchars($panel['panel_name']) ?>!</h2>
+       <h2 class="fw-bold mb-1">
+    Welcome back, <?= htmlspecialchars($panel['panel_name']) ?>!
+    <?= panelTitleBadge($panel['panel_title'] ?? '') ?>
+</h2>
         <p class="opacity-75">Panel ID: EAP-P-<?= str_pad($panel['id'], 4, '0', STR_PAD_LEFT) ?> | Status: <span class="badge bg-success"><?= $panel['status'] ?></span></p>
     </div>
 </div>
@@ -132,6 +135,7 @@ if (!$panel) {
         </div>
 
         <div class="col-lg-9">
+           
             <div class="info-card p-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold mb-0">My Profile Information</h4>
@@ -164,6 +168,8 @@ if (!$panel) {
                         
                         <p class="data-label">Highest Qualification</p>
                         <p class="data-value"><?= htmlspecialchars($panel['qualification']) ?></p>
+                         <p class="data-label">Title</p>
+                         <p class="data-value text-wrap"><?= htmlspecialchars($panel['panel_title']) ?></p>
                     </div>
                     <div class="col-md-6">
                         <p class="data-label">Specific Programme</p>
@@ -171,6 +177,7 @@ if (!$panel) {
                         
                         <p class="data-label">Appointment Start Date</p>
                         <p class="data-value"><?= date('d F Y', strtotime($panel['start_date'])) ?></p>
+
                     </div>
                 </div>
 
@@ -193,5 +200,9 @@ if (!$panel) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
 </body>
 </html>

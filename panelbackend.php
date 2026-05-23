@@ -16,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $qualification = mysqli_real_escape_string($conn, $_POST['qualification']);
     $start_date    = mysqli_real_escape_string($conn, $_POST['start_date']);
     $remarks       = mysqli_real_escape_string($conn, $_POST['remarks']);
+    $panel_title   = mysqli_real_escape_string($conn, $_POST['panel_title'] ?? '');
     $default_pass  = "123456"; 
 
     // 2. FIXED File Upload Logic
@@ -56,17 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // 3. Move File and Insert into Database
     if (move_uploaded_file($_FILES["resume"]["tmp_name"], $target_file)) {
-        
-        $sql = "INSERT INTO panel_members (panel_name, email, phone, level, programme, qualification, start_date, resume_path, remarks, status, password) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)";
+      $sql = "INSERT INTO panel_members (panel_name, panel_title, email, phone, level, programme, qualification, start_date, resume_path, remarks, status, password) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)";
         
         $stmt = mysqli_prepare($conn, $sql);
         
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "ssssssssss", 
-                $panel_name, $email, $phone, $level, $programme, 
-                $qualification, $start_date, $target_file, $remarks, $default_pass
-            );
+          mysqli_stmt_bind_param($stmt, "sssssssssss", 
+    $panel_name, $panel_title, $email, $phone, $level, $programme, 
+    $qualification, $start_date, $target_file, $remarks, $default_pass
+);
 
             if (mysqli_stmt_execute($stmt)) {
                 // Log activity

@@ -1,6 +1,7 @@
 <?php
 
-
+// set timezone for timestamp
+date_default_timezone_set('Asia/Kuala_Lumpur');
 $servername = "localhost";
 $username = "root";
 $password = "";
