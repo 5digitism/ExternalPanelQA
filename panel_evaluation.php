@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_evaluation'])) 
     $criteria_names     = $_POST['criteria_name'] ?? [];
     // issues is a 2D array: issues[criteria_index][issue_index]
     $all_issues         = $_POST['issues'] ?? [];
-
+$criteria_types  = $_POST['criteria_type'] ?? [];
     if (empty($criteria_names)) {
         $error_msg = "Please add at least one criterion.";
     } else {
@@ -45,28 +45,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_evaluation'])) 
         if ($stmt->execute()) {
             $evaluation_id = $conn->insert_id;
 
-            $sql_crit = "INSERT INTO evaluation_criteria (evaluation_id, criteria_name) VALUES (?, ?)";
-            $stmt_crit = $conn->prepare($sql_crit);
+$sql_crit = "INSERT INTO evaluation_criteria (evaluation_id, criteria_name, criteria_type) VALUES (?, ?, ?)";
+$stmt_crit = $conn->prepare($sql_crit);
 
-            $sql_issue = "INSERT INTO criteria_issues (criteria_id, issue_text) VALUES (?, ?)";
-            $stmt_issue = $conn->prepare($sql_issue);
+$sql_issue = "INSERT INTO criteria_issues (criteria_id, issue_text) VALUES (?, ?)";
+$stmt_issue = $conn->prepare($sql_issue);
 
-            foreach ($criteria_names as $i => $criteria_name) {
-                $criteria_name = trim($criteria_name);
-                if (empty($criteria_name)) continue;
+$all_issues   = $_POST['issues'] ?? [];
+$all_types    = $_POST['issue_type'] ?? [];  // 2D: [criteria_index][issue_index]
 
-                $stmt_crit->bind_param("is", $evaluation_id, $criteria_name);
-                $stmt_crit->execute();
-                $criteria_id = $conn->insert_id;
+$sql_crit  = "INSERT INTO evaluation_criteria (evaluation_id, criteria_name) VALUES (?, ?)";
+$stmt_crit = $conn->prepare($sql_crit);
 
-                $issues = $all_issues[$i] ?? [];
-                foreach ($issues as $issue_text) {
-                    $issue_text = trim($issue_text);
-                    if (empty($issue_text)) continue;
-                    $stmt_issue->bind_param("is", $criteria_id, $issue_text);
-                    $stmt_issue->execute();
-                }
-            }
+$sql_issue  = "INSERT INTO criteria_issues (criteria_id, issue_text, issue_type) VALUES (?, ?, ?)";
+$stmt_issue = $conn->prepare($sql_issue);
+
+foreach ($criteria_names as $i => $criteria_name) {
+    $criteria_name = trim($criteria_name);
+    if (empty($criteria_name)) continue;
+
+    $stmt_crit->bind_param("is", $evaluation_id, $criteria_name);
+    $stmt_crit->execute();
+    $criteria_id = $conn->insert_id;
+
+    $issues = $all_issues[$i] ?? [];
+    $types  = $all_types[$i]  ?? [];
+
+    foreach ($issues as $j => $issue_text) {
+        $issue_text = trim($issue_text);
+        if (empty($issue_text)) continue;
+        $itype = $types[$j] ?? null;
+        $stmt_issue->bind_param("iss", $criteria_id, $issue_text, $itype);
+        $stmt_issue->execute();
+    }
+}
 
             $success_msg = "Evaluation submitted successfully!";
             logActivity($conn, "Evaluation submitted by " . $panel['panel_name'], "Evaluation", "bg-info");
@@ -145,6 +157,78 @@ $prev_evaluations = $conn->query("
         .issues-table tbody td { padding: 8px 10px; vertical-align: top; }
         .row-num { font-size: 12px; color: #adb5bd; text-align: center; padding-top: 10px !important; }
         .table-wrapper { border: 1px solid #e9ecef; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+
+        .criteria-type-bar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 16px; background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+.type-label {
+    font-size: 11px; font-weight: 700; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.type-pill {
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    font-weight: 600; cursor: pointer;
+}
+.type-pill.concern        { background: #fee2e2; color: #991b1b; }
+.type-pill.opportunity    { background: #fef3c7; color: #92400e; }
+.type-pill.recommendation { background: #d1fae5; color: #065f46; }
+
+/* Highlight selected */
+input[type="radio"]:checked + label .type-pill.concern        { background: #dc2626; color: white; }
+input[type="radio"]:checked + label .type-pill.opportunity    { background: #d97706; color: white; }
+input[type="radio"]:checked + label .type-pill.recommendation { background: #059669; color: white; }
+
+/* Hide default radio dot */
+.criteria-type-bar .form-check-input { display: none; }
+/* Make type pills feel clickable */
+.criteria-type-bar .form-check-label {
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: inline-block;
+}
+
+.criteria-type-bar .form-check-label:hover .type-pill {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    filter: brightness(0.95);
+}
+
+.criteria-type-bar .form-check-label:active .type-pill {
+    transform: translateY(0px);
+    box-shadow: none;
+}
+
+/* Add a subtle border so it looks like a button, not just text */
+.type-pill {
+    font-size: 11px; padding: 5px 14px; border-radius: 999px;
+    font-weight: 600; cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.type-pill.concern        { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.type-pill.opportunity    { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+.type-pill.recommendation { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.form-check-input[type="radio"] { display: none; }
+.form-check-label { cursor: pointer; display: inline-block; }
+
+/* When selected — solid filled */
+input[type="radio"]:checked + label .type-pill.concern        { 
+    background: #dc2626; color: white; border-color: #dc2626;
+    box-shadow: 0 2px 8px rgba(220,38,38,0.35);
+}
+input[type="radio"]:checked + label .type-pill.opportunity    { 
+    background: #d97706; color: white; border-color: #d97706;
+    box-shadow: 0 2px 8px rgba(217,119,6,0.35);
+}
+input[type="radio"]:checked + label .type-pill.recommendation { 
+    background: #059669; color: white; border-color: #059669;
+    box-shadow: 0 2px 8px rgba(5,150,105,0.35);
+}
     </style>
 </head>
 <body>
@@ -272,38 +356,71 @@ function buildCriteriaHTML(id) {
         <span class="criteria-pill" id="pill-${id}">Criteria ${id}</span>
         <input type="text" name="criteria_name[${id - 1}]"
             class="form-control form-control-sm w-50"
-            placeholder="Criteria Name " required>
-        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCriteria('crit-${id}')">Remove</button>
+            placeholder="Criteria name e.g. Programme Design and Delivery" required>
+        <button type="button" class="btn btn-sm btn-outline-danger" 
+            onclick="removeCriteria('crit-${id}')">Remove</button>
     </div>
+
+
     <div class="criteria-body">
         <div class="table-wrapper">
             <table class="issues-table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th style="width:36px">#</th>
                         <th>Issue / finding</th>
-                        <th></th>
+                        <th style="width:50px"></th>
                     </tr>
                 </thead>
                 <tbody id="tbody-${id}"></tbody>
             </table>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-info" onclick="addIssue(${id})">+ Add Issue</button>
+        <button type="button" class="btn btn-sm btn-outline-info mt-2" 
+            onclick="addIssue(${id})">+ Add Issue</button>
     </div>`;
 }
 
 function addIssue(critId) {
     issueCounts[critId] = (issueCounts[critId] || 0) + 1;
-    const num = issueCounts[critId];
+    const num       = issueCounts[critId];
     const critIndex = getCritIndex(critId);
-    const row = document.createElement('tr');
+    const row       = document.createElement('tr');
     row.id = 'issue-' + critId + '-' + num;
     row.innerHTML = `
         <td class="row-num">${num}</td>
         <td>
             <textarea name="issues[${critIndex}][]"
-                class="form-control form-control-sm" rows="2"
+                class="form-control form-control-sm mb-2" rows="2"
                 placeholder="Describe the issue…" required></textarea>
+            <div class="d-flex gap-2 flex-wrap">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio"
+                        name="issue_type[${critIndex}][${num-1}]"
+                        id="it-concern-${critId}-${num}"
+                        value="concern" required>
+                    <label class="form-check-label" for="it-concern-${critId}-${num}">
+                        <span class="type-pill concern">Concern</span>
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio"
+                        name="issue_type[${critIndex}][${num-1}]"
+                        id="it-ofi-${critId}-${num}"
+                        value="opportunity">
+                    <label class="form-check-label" for="it-ofi-${critId}-${num}">
+                        <span class="type-pill opportunity">Opportunity for Improvement</span>
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio"
+                        name="issue_type[${critIndex}][${num-1}]"
+                        id="it-rec-${critId}-${num}"
+                        value="recommendation">
+                    <label class="form-check-label" for="it-rec-${critId}-${num}">
+                        <span class="type-pill recommendation">Recommendation</span>
+                    </label>
+                </div>
+            </div>
         </td>
         <td style="padding-top:8px">
             <button type="button" class="btn btn-sm btn-outline-danger"

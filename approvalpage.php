@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'db.php'; 
-
+require_once 'panel_title_badge.php';
 // Access control: Only allow Head QA
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Head QA') {
     header("Location: loginpage.html");
@@ -57,6 +57,7 @@ if (!$result) {
             <button class="collapse-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
         </div>
         <a href="HQApage.php"><i class="fas fa-chart-line me-2"></i> <span>Dashboard</span></a>
+         <a href="qa_dashboard.php"><i class="fas fa-table me-2"></i> <span>Status Submission</span></a>
         <a href="approvalpage.php" class="active"><i class="fas fa-user-check me-2"></i> <span>Pending Approvals</span></a>
         <a href="HQApanel.php"><i class="fas fa-users me-2"></i> <span>Panels Directory</span></a>
         <hr>
@@ -87,7 +88,7 @@ if (!$result) {
                                     <i class="fas fa-user-tie text-primary fa-lg"></i>
                                 </div>
                                 <div>
-                                    <h5 class="fw-bold mb-0"><?php echo htmlspecialchars($row['panel_name']); ?></h5>
+                                    <h5 class="fw-bold mb-0"><?php echo htmlspecialchars($row['panel_name']); ?><?= panelTitleBadge($panel['panel_title'] ?? '') ?></h5>
                                     <small class="text-muted">Applied: <?php echo date('d M Y', strtotime($row['start_date'])); ?></small>
                                 </div>
                             </div>
@@ -193,4 +194,9 @@ if (!$result) {
     });
 </script>
 </body>
+<?php require_once 'check_overdue.php'; ?>
+<?php require_once 'notifications_ui.php'; ?>
+<div id="notifBannerStrip"
+     style="position:fixed; bottom:90px; left:20px; right:100px; z-index:9997; pointer-events:none;">
+</div>
 </html>

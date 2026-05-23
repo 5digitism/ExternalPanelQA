@@ -28,8 +28,14 @@ if ($action === 'save_comment') {
 
     if ($criteria_id <= 0) { http_response_code(400); exit('Invalid criteria ID'); }
 
-    $stmt = $conn->prepare("UPDATE evaluation_criteria SET status = ? WHERE id = ?");
-    $stmt->bind_param("si", $status, $criteria_id);
-    echo $stmt->execute() ? $status : 'error';
+    if ($status === 'closed') {
+        $closed_at = date('Y-m-d H:i:s');
+        $stmt = $conn->prepare("UPDATE evaluation_criteria SET status = ?, closed_at = ? WHERE id = ?");
+        $stmt->bind_param("ssi", $status, $closed_at, $criteria_id);
+    } else {
+        $stmt = $conn->prepare("UPDATE evaluation_criteria SET status = ?, closed_at = NULL WHERE id = ?");
+        $stmt->bind_param("si", $status, $criteria_id);
+    }
 
+    echo $stmt->execute() ? $status : 'error';
 }

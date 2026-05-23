@@ -1,6 +1,6 @@
 <?php
 require_once 'db.php';
-
+require_once 'panel_title_badge.php';
 // Fetch all panels
 $query = "SELECT * FROM panel_members ORDER BY id DESC";
 $result = $conn->query($query);
@@ -57,6 +57,8 @@ if (!$result) {
       <button class="collapse-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
     </div>
     <a href="HQApage.php"><i class="fas fa-chart-line me-2"></i> <span>Dashboard</span></a>
+          <a href="qa_dashboard.php" ><i class="fas fa-table me-2"></i> <span>Status Submission</span></a>
+          <a href="approvalpage.php" ><i class="fas fa-user-check me-2"></i> <span>Pending Approvals</span></a>
     <a href="HQApanel.php" class="active"><i class="fas fa-users-cog me-2"></i> <span>Manage Panels</span></a>
     <hr>
     <a href="logout.php" class="text-warning"><i class="fas fa-sign-out-alt me-2"></i> <span>Logout</span></a>
@@ -119,7 +121,7 @@ if (!$result) {
                     <?php while($row = $result->fetch_assoc()): ?>
                         <tr class="panel-row" data-level="<?= htmlspecialchars($row['level']) ?>" data-prog="<?= htmlspecialchars($row['programme']) ?>">
                             <td class="ps-4">
-                                <div class="fw-bold text-dark panel-search-name"><?= htmlspecialchars($row['panel_name']) ?></div>
+                                <div class="fw-bold text-dark panel-search-name"><?= htmlspecialchars($row['panel_name']) ?><?= panelTitleBadge($panel['panel_title'] ?? '') ?></div>
                                 <small class="text-muted">EAP-P-<?= str_pad($row['id'], 4, '0', STR_PAD_LEFT) ?></small>
                             </td>
                             <td class="text-center">
@@ -251,4 +253,9 @@ if (!$result) {
     });
 </script>
 </body>
+<?php require_once 'check_overdue.php'; ?>
+<?php require_once 'notifications_ui.php'; ?>
+<div id="notifBannerStrip"
+     style="position:fixed; bottom:90px; left:20px; right:100px; z-index:9997; pointer-events:none;">
+</div>
 </html>
